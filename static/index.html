@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8" />
         <title></title>
-            <link href="./css/todoapp.css" rel="stylesheet" type="text/css"></link>
             <script src="./js/index.js" type="text/javascript"></script>
         
     </head>
@@ -11,36 +10,38 @@
 
         <h1>ToDo</h1>
 
-        <table id="list">
+
+        <table id="todoTable">
             <tr>
-                <th id="importanceTable">重要度</th>
-                <th id="taskTable">タスク</th>
-                <th id="limitTable">期限</th>
+                <th>重要度</th>
+                
+                <th>タスク</th>
+                <th>期限</th>
             </tr>
         </table>
 
 
 
-        <form id="post">
+        <form name="post">
 
-            <p>
+            <div>
             重要度
-            <label><input type="radio" name="importance" value="重">高</label>
-            <label><input type="radio" name="importance" value="■" checked="checked">中</label>
-            <label><input type="radio" name="importance" value="－">低</label>
-            </p>
+            <label><input id="impId" name="impName" type="radio" value="重">高</label>
+            <label><input id="impId" name="impName" type="radio" value="■" checked="checked">中</label>
+            <label><input id="impId" name="impName" type="radio" value="－">低</label>
+            </div>
 
-            <p>
-            <input name="task" type="text" placeholder="タスク">
-            </p>
+            <div>
+            <input id="taskId" name="taskName" type="text" placeholder="タスク">
+            </div>
 
-            <p>
-            <input name="limit" type="text" placeholder="期限">
-            </p>
+            <div>
+            <input id="limitId" name="limitName" type="text" placeholder="期限">
+            </div>
 
-            <p>
-            <button onclick="entry()">登録</button>
-            </p>
+            <div>
+            <button type="button" onclick="entry('todoTable')">登録</button>
+            </div>
 
         </form>
 
