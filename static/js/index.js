@@ -1,5 +1,3 @@
-
-
 function entry(id) {
 	
 	let imp = document.post.impName.value;
@@ -8,16 +6,24 @@ function entry(id) {
 	
 	let table = document.getElementById(id);
 
-	let newRow   = table.insertRow(-1);
+	let newRow  = table.insertRow(-1);
   
 	let cell1 = newRow.insertCell(-1);
 	let cell2 = newRow.insertCell(-1);
 	let cell3 = newRow.insertCell(-1);
-	let newText1  = document.createTextNode(imp);
-	let newText2  = document.createTextNode(task);
-	let newText3  = document.createTextNode(limit);
+	let cell4 = newRow.insertCell(-1);
 
-	cell1.appendChild(newText1);
-	cell2.appendChild(newText2);
-	cell3.appendChild(newText3);
+	let impText  = document.createTextNode(imp);
+	let taskText  = document.createTextNode(task);
+	let limitText  = document.createTextNode(limit);
+
+	cell1.appendChild(impText);
+	cell2.appendChild(taskText);
+	cell3.appendChild(limitText);
+	cell4.innerHTML = '<button type="button" id="dButton" onclick="dButton(this)">削除</button>';
+}
+
+function dButton(obj) {
+	tr = obj.parentNode.parentNode;
+	tr.parentNode.deleteRow(tr.sectionRowIndex);
 }
