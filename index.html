@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Todo283</title>
+        
+    </head>
+    <body>
+
+        <h1>ToDo</h1>
+
+        <table id="table">
+            <tr>
+                <th>重要度</th>
+                <th>タスク</th>
+                <th>期限</th>
+                <th>削除</th>
+            </tr>
+        </table>
+
+<div id="a"></div>
+
+        <form id="post">
+
+            <div>
+                重要度
+                <label><input id="importance" name="imp" type="radio" value="重">高</label>
+                <label><input id="importance" name="imp" type="radio" value="■" checked="checked">中</label>
+                <label><input id="importance" name="imp" type="radio" value="－">低</label>
+            </div>
+
+            <div>
+                <input id="task" type="text" placeholder="タスク">
+            </div>
+
+            <div>
+                <input id="deadline" type="text" placeholder="期限">
+            </div>
+
+            <div>
+                <button type="button" onclick="entry()">登録</button>
+            </div>
+
+        </form>
+
+        <script src="./index.js" type="text/javascript"></script>
+
+    </body>
+</html>
