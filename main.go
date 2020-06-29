@@ -22,7 +22,7 @@ func main() {
 	var err error
 	db, err = sql.Open("mysql", "root:0111@/todo283")
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 	defer db.Close()
 
@@ -33,6 +33,9 @@ func main() {
 	http.HandleFunc("/todoList", todoList)
 	http.HandleFunc("/todoDelete", todoDelete)
 	http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
 // 登録
