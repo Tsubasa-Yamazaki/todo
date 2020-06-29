@@ -1,21 +1,21 @@
 package main
 
 import (
-	"log"
-	"fmt"
-	"net/http"
 	"database/sql"
 	"encoding/json"
+	"log"
+	"net/http"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
 
 type todo struct {
-	Id        	int    `json:"id"`
-	Importance  string `json:"importance"`
-	Task		string `json:"task"`
-	Deadline 	string `json:"deadline"`
+	Id         int    `json:"id"`
+	Importance string `json:"importance"`
+	Task       string `json:"task"`
+	Deadline   string `json:"deadline"`
 }
 
 func main() {
@@ -39,16 +39,18 @@ func main() {
 func post(w http.ResponseWriter, r *http.Request) {
 	var body todo
 	err := json.NewDecoder(r.Body).Decode(&body)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }
-	tdl, err := db.Prepare("INSERT todolist SET importance=?,task=?,deadline=?")
-    if err != nil {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-    _, err = tdl.Exec(body.Importance, body.Task, body.Deadline)
-    if err != nil {
+
+	tdl, err := db.Prepare("INSERT todolist SET importance=?,task=?,deadline=?")
+	if err != nil {
+		return
+	}
+
+	_, err = tdl.Exec(body.Importance, body.Task, body.Deadline)
+	if err != nil {
 		return
 	}
 }
@@ -58,20 +60,19 @@ func todoList(w http.ResponseWriter, r *http.Request) {
 	var todos []todo
 	var err error
 	rows, err := db.Query("SELECT * FROM todolist")
-    if err != nil {
-        return
+	if err != nil {
+		return
 	}
-	
-	fmt.Println(rows)
-    for rows.Next() {
-        var todotable todo
-        err = rows.Scan(&todotable.Id, &todotable.Importance, &todotable.Task, &todotable.Deadline)
-  
+
+	for rows.Next() {
+		var todotable todo
+		err = rows.Scan(&todotable.Id, &todotable.Importance, &todotable.Task, &todotable.Deadline)
 		todos = append(todos, todotable)
-    }
+	}
+
 	todoJson, err := json.Marshal(todos)
-    if err != nil {
-        return
+	if err != nil {
+		return
 	}
 
 	w.Write(todoJson)
@@ -81,18 +82,19 @@ func todoList(w http.ResponseWriter, r *http.Request) {
 func todoDelete(w http.ResponseWriter, r *http.Request) {
 	var body todo
 	err := json.NewDecoder(r.Body).Decode(&body)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-	}
-	deleteId := body.Id
-	tdl, err := db.Prepare("DELETE FROM todolist WHERE id = ?")
-    if err != nil {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-    _, err = tdl.Exec(deleteId)
-    if err != nil {
+
+	deleteId := body.Id
+	tdl, err := db.Prepare("DELETE FROM todolist WHERE id = ?")
+	if err != nil {
+		return
+	}
+
+	_, err = tdl.Exec(deleteId)
+	if err != nil {
 		return
 	}
 }
-
