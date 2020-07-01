@@ -1,99 +1,113 @@
-function entry() {
-  let impElement = document.getElementById("post");
-  let impRadio = impElement.imp;
-  let importance = impRadio;
-  let task = document.getElementById("task");
-  let deadline = document.getElementById("deadline");
+const app = new Vue({
+  el: "#app",
+  data: {
+    id: "",
+    importance: "",
+    task: "",
+    deadline: "",
+  },
 
-  let todoData = {
-    importance: importance.value,
-    task: task.value,
-    deadline: deadline.value,
-  };
+  created: function () {
+    this.display();
+  },
 
-  fetch("/post", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  methods: {
+    entry: function () {
+      let todoData = {
+        importance: this.importance,
+        task: this.task,
+        deadline: this.deadline,
+      };
+
+      fetch("/post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todoData),
+      }).then((response) => {
+        this.display();
+      });
+      alert("登録しました");
     },
-    body: JSON.stringify(todoData),
-  }).then((response) => {
-    display();
-  });
-  alert("登録しました");
-}
 
-function display() {
-  fetch("/todoList", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+    //一覧用データ取得
+    display: function () {
+      fetch("/todoList", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((todoData) => {
+          this.tableDelete();
+          this.displayTable(todoData);
+        });
     },
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((todoData) => {
-      tableDelete();
-      displayTable(todoData);
-    });
-}
 
-function tableDelete() {
-  let table = document.getElementById(`table`);
-  let loopCount = table.rows.length;
+    //画面テーブル削除
+    tableDelete: function () {
+      let table = document.getElementById(`table`);
+      let loopCount = table.rows.length;
 
-  for (let i = 0; i < loopCount; i++) {
-    if (i === 0) {
-      continue;
-    }
-    table.deleteRow(1);
-  }
-}
-
-function displayTable(todoData) {
-  todoData.forEach(function (element) {
-    let table = document.getElementById(`table`);
-    let id = element.id;
-    let imp = element.importance;
-    let task = element.task;
-    let limit = element.deadline;
-
-    let newRow = table.insertRow(-1);
-    let cell1 = newRow.insertCell(-1);
-    let cell2 = newRow.insertCell(-1);
-    let cell3 = newRow.insertCell(-1);
-    let cell4 = newRow.insertCell(-1);
-    let impText = document.createTextNode(imp);
-    let taskText = document.createTextNode(task);
-    let limitText = document.createTextNode(limit);
-
-    cell1.appendChild(impText);
-    cell2.appendChild(taskText);
-    cell3.appendChild(limitText);
-
-    let dButton = document.createElement("button");
-    dButton.type = "button";
-    dButton.value = id;
-    dButton.innerText = "削除";
-    dButton.addEventListener("click", deleteMode, false);
-    cell4.appendChild(dButton);
-  });
-}
-
-function deleteMode() {
-  let todoData = {
-    id: parseInt(this.value, 10),
-  };
-
-  fetch("/todoDelete", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+      for (let i = 0; i < loopCount; i++) {
+        if (i === 0) {
+          continue;
+        }
+        table.deleteRow(1);
+      }
     },
-    body: JSON.stringify(todoData),
-  }).then((response) => {
-    display();
-  });
-  alert("削除しました");
-}
+
+    //画面テーブル生成
+    displayTable: function (todoData) {
+      todoData.forEach(function (element) {
+        let table = document.getElementById(`table`);
+        let id = element.id;
+        let imp = element.importance;
+        let task = element.task;
+        let limit = element.deadline;
+
+        let newRow = table.insertRow(-1);
+        let cell1 = newRow.insertCell(-1);
+        let cell2 = newRow.insertCell(-1);
+        let cell3 = newRow.insertCell(-1);
+        let cell4 = newRow.insertCell(-1);
+        let impText = document.createTextNode(imp);
+        let taskText = document.createTextNode(task);
+        let limitText = document.createTextNode(limit);
+
+        cell1.appendChild(impText);
+        cell2.appendChild(taskText);
+        cell3.appendChild(limitText);
+
+        let dButton = document.createElement("button");
+        dButton.type = "button";
+        dButton.value = id;
+        dButton.innerText = "削除";
+        dButton.addEventListener("@click", this.deleteMode, false);
+        cell4.appendChild(dButton);
+      });
+    },
+
+    //削除ボタン
+    deleteMode: function () {
+      let todoData = {
+        id: parseInt(this.value, 10),
+      };
+
+      fetch("/todoDelete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todoData),
+      }).then((response) => {
+        this.display();
+      });
+      alert("削除しました");
+    },
+  },
+});
