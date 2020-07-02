@@ -1,51 +1,58 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
-    <title>Todo283</title>
-  </head>
-  <body>
-    <h1>ToDo</h1>
 
-    <div id="app">
-      <table id="table">
-        <tr>
-          <th>重要度</th>
-          <th>タスク</th>
-          <th>期限</th>
-          <th>削除</th>
-        </tr>
-      </table>
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+  <title>Todo283</title>
+</head>
 
-      <form id="post">
-        <div>
-          重要度
-          <label>
-            <input v-model="importance" type="radio" value="重" />高い</label
-          >
-          <label>
-            <input v-model="importance" type="radio" value="普" />普通</label
-          >
-          <label>
-            <input v-model="importance" type="radio" value="低" />低い</label
-          >
-        </div>
+<body>
+  <h1>ToDo</h1>
 
-        <div>
-          <input v-model="task" type="text" placeholder="タスク" />
-        </div>
+  <div id="app">
 
-        <div>
-          <input v-model="deadline" type="text" placeholder="期限" />
-        </div>
+    <table>
+      <tr>
+        <th>重要度</th>
+        <th>タスク</th>
+        <th>期限</th>
+        <th>削除</th>
+      </tr>
+      <tr v-for="todo in todos" v-bind:key="todo.id">
+        <td>{{ todo.importance }}</td>
+        <td>{{ todo.task }}</td>
+        <td>{{ todo.deadline }}</td>
+        <td><button @click="deleteMode(todo.id)">削除</button></td>
+      </tr>
+    </table>
 
-        <div>
-          <button type="button" @click="entry">登録</button>
-        </div>
-      </form>
-    </div>
+    <form id="post">
+      <div>
+        重要度
+        <label>
+          <input v-model="importance" type="radio" value="重" />高い</label>
+        <label>
+          <input v-model="importance" type="radio" value="普" />普通</label>
+        <label>
+          <input v-model="importance" type="radio" value="低" />低い</label>
+      </div>
 
-    <script src="./index.js" type="text/javascript"></script>
-  </body>
+      <div>
+        <input v-model="task" type="text" placeholder="タスク" />
+      </div>
+
+      <div>
+        <input v-model="deadline" type="text" placeholder="期限" />
+      </div>
+
+      <div>
+        <button type="button" @click="entry">登録</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="./index.js" type="text/javascript"></script>
+</body>
+
 </html>
