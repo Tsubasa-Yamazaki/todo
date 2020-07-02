@@ -12,7 +12,7 @@ import (
 var db *sql.DB
 
 type todo struct {
-	Id         int    `json:"id"`
+	ID         int    `json:"id"`
 	Importance string `json:"importance"`
 	Task       string `json:"task"`
 	Deadline   string `json:"deadline"`
@@ -29,9 +29,16 @@ func main() {
 	log.Println("Open the 283todo.")
 
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	http.HandleFunc("/post", post)
-	http.HandleFunc("/todoList", todoList)
-	http.HandleFunc("/todoDelete", todoDelete)
+	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			post(w, r)
+		case http.MethodGet:
+			todoList(w, r)
+		case http.MethodDelete:
+			todoDelete(w, r)
+		}
+	})
 	http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -49,11 +56,13 @@ func post(w http.ResponseWriter, r *http.Request) {
 
 	tdl, err := db.Prepare("INSERT todolist SET importance=?,task=?,deadline=?")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	_, err = tdl.Exec(body.Importance, body.Task, body.Deadline)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 }
@@ -64,17 +73,19 @@ func todoList(w http.ResponseWriter, r *http.Request) {
 	var err error
 	rows, err := db.Query("SELECT * FROM todolist")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	for rows.Next() {
 		var todotable todo
-		err = rows.Scan(&todotable.Id, &todotable.Importance, &todotable.Task, &todotable.Deadline)
+		err = rows.Scan(&todotable.ID, &todotable.Importance, &todotable.Task, &todotable.Deadline)
 		todos = append(todos, todotable)
 	}
 
 	todoJson, err := json.Marshal(todos)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -89,15 +100,16 @@ func todoDelete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	deleteId := body.Id
+	deleteId := body.ID
 	tdl, err := db.Prepare("DELETE FROM todolist WHERE id = ?")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	_, err = tdl.Exec(deleteId)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

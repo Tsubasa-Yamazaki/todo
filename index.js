@@ -5,23 +5,19 @@ const app = new Vue({
     importance: "",
     task: "",
     deadline: "",
-
     todos: []
   },
-
   created: function () {
     this.display();
   },
-
   methods: {
     entry: function () {
-      let todoData = {
+      const todoData = {
         importance: this.importance,
         task: this.task,
         deadline: this.deadline,
       };
-
-      fetch("/post", {
+      fetch("/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,13 +25,12 @@ const app = new Vue({
         body: JSON.stringify(todoData),
       }).then((response) => {
         this.display();
-      });
+      }).catch(error => console.error('Error:', error));
       alert("登録しました");
     },
-
     //一覧用データ取得
     display: function () {
-      fetch("/todoList", {
+      fetch("/todos", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -46,24 +41,22 @@ const app = new Vue({
         })
         .then((todoData) => {
           this.todos = todoData;
-        });
+        }).catch(error => console.error('Error:', error));
     },
-
     //削除ボタン
     deleteMode: function (id) {
-      let todoData = {
+      const todoData = {
         id: id,
       };
-
-      fetch("/todoDelete", {
-        method: "POST",
+      fetch("/todos", {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(todoData),
       }).then((response) => {
         this.display();
-      });
+      }).catch(error => console.error('Error:', error));
       alert("削除しました");
     },
   },
