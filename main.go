@@ -31,11 +31,11 @@ func main() {
 	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			post(w, r)
+			createTodo(w, r)
 		case http.MethodGet:
-			todoList(w, r)
+			todos(w, r)
 		case http.MethodDelete:
-			todoDelete(w, r)
+			deleteTodo(w, r)
 		}
 	})
 	http.ListenAndServe(":8080", nil)
@@ -45,7 +45,7 @@ func main() {
 }
 
 // 登録
-func post(w http.ResponseWriter, r *http.Request) {
+func createTodo(w http.ResponseWriter, r *http.Request) {
 	var body todo
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -67,7 +67,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 }
 
 // 表示
-func todoList(w http.ResponseWriter, r *http.Request) {
+func todos(w http.ResponseWriter, r *http.Request) {
 	todos := []todo{}
 	var err error
 	rows, err := db.Query("SELECT * FROM todolist")
@@ -87,19 +87,13 @@ func todoList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(todoJson)
 }
 
 // 削除
-func todoDelete(w http.ResponseWriter, r *http.Request) {
-	var body todo
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	deleteId := body.ID
+func deleteTodo(w http.ResponseWriter, r *http.Request) {
+	deleteId := r.URL.Query().Get("id")
 	tdl, err := db.Prepare("DELETE FROM todolist WHERE id = ?")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

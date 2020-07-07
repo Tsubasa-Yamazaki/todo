@@ -3,27 +3,52 @@
     <h1>ToDo</h1>
 
     <v-data-table :headers="headers" :items="todoData" :items-per-page="5" item-key="id">
+      <template v-slot:item.importance="{ item }">
+        <v-chip :color="getColor(item.importance)" dark></v-chip>
+      </template>
+
       <template v-slot:item.delete="{ item }">
-        <v-btn small @click="deleteMode(item.id)">タスク削除</v-btn>
+        <v-btn small @click="deleteTodo(item.id)">タスク削除</v-btn>
       </template>
     </v-data-table>
 
     <v-form>
-      <div>
-        重要度
+      <div class="importance">
+            <v-chip
+      class="ma-2"
+      color="red"
+    >重要度
+    </v-chip>
         <v-radio-group v-model="todo.importance" :mandatory="true">
-          <v-radio label="高い" value="重"></v-radio>
-          <v-radio label="普通" value="普"></v-radio>
-          <v-radio label="低い" value="低"></v-radio>
+          <v-radio label="高い" value="high"></v-radio>
+          <v-radio label="普通" value="normal"></v-radio>
+          <v-radio label="低い" value="low"></v-radio>
         </v-radio-group>
       </div>
-      <v-col>
-        <v-text-field v-model="todo.task" :counter="255" label="タスク" required></v-text-field>
+      <div class="text">
+      <v-col cols="6">
+        <v-text-field v-model="todo.task" :counter="255" label="タスク入力" outlined
+            shaped required></v-text-field>
       </v-col>
-      <v-col>
-        <v-text-field v-model="todo.deadline" :counter="255" label="期限" required></v-text-field>
+      <v-menu>
+        <template v-slot:activator="{on}">
+          <v-btn color="primary" dark v-on="on">
+            <v-icon>mdi-calendar</v-icon>カレンダーから日付を入力する
+          </v-btn>
+        </template>
+        <v-date-picker
+          locale="ja"
+          :day-format="date => new Date(date).getDate()"
+          v-model="todo.deadline"
+        />
+      </v-menu>
+      
+      <v-col cols="6">
+        <v-text-field v-model="todo.deadline" :counter="255" label="期限入力" outlined
+            shaped required></v-text-field>
       </v-col>
-      <v-btn @click="entry">登録</v-btn>
+      <v-btn @click="createTodo">登録</v-btn>
+      </div>
     </v-form>
   </div>
 </template>
@@ -59,10 +84,10 @@ export default {
   },
 
   created: function() {
-    this.display();
+    this.createTodo();
   },
   methods: {
-    entry: function() {
+    createTodo: function() {
       axios
         .post("/todos", {
           importance: this.todo.importance,
@@ -70,14 +95,14 @@ export default {
           deadline: this.todo.deadline
         })
         .then(response => {
-          this.display();
+          this.getTodos();
         })
         .catch(err => {
           console.log(err);
         });
     },
     //一覧用データ取得
-    display: function() {
+    getTodos() {
       axios
         .get("/todos")
         .then(response => {
@@ -88,21 +113,37 @@ export default {
         });
     },
     //削除ボタン
-    deleteMode: function(id) {
+    deleteTodo: function(id) {
       axios
         .delete("/todos", {
-          data: { id: id }
+          params: { id: id }
         })
         .then(response => {
-          this.display();
+          this.getTodos();
         })
         .catch(err => {
           console.log(err);
         });
+    },
+    //重要度カラー取得
+    getColor(importance) {
+      if (importance === "high") return "red";
+      else if (importance === "normal") return "orange";
+      else return "green";
     }
   }
 };
 </script>
 
 <style>
+
+.text {
+  margin : 0;
+}
+
+.importance {
+    padding-top: 1em;
+    padding-left: 1em;
+}
+
 </style>
