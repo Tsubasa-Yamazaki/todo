@@ -17,7 +17,7 @@
         <v-chip class="ma-2" color="red">重要度</v-chip>
         <v-radio-group v-model="todo.importance" :mandatory="true">
           <v-radio label="高い" value="high"></v-radio>
-          <v-radio label="普通" value="normal"></v-radio>
+          <v-radio label="普通" value="middle"></v-radio>
           <v-radio label="低い" value="low"></v-radio>
         </v-radio-group>
       </div>
@@ -88,13 +88,9 @@ export default {
     this.createTodo();
   },
   methods: {
-    createTodo: function() {
+    createTodo() {
       axios
-        .post("/todos", {
-          importance: this.todo.importance,
-          task: this.todo.task,
-          deadline: this.todo.deadline
-        })
+        .post("/todos", this.todo)
         .then(response => {
           this.getTodos();
         })
@@ -102,7 +98,7 @@ export default {
           console.log(err);
         });
     },
-    //一覧用データ取得
+    // 一覧用データ取得
     getTodos() {
       axios
         .get("/todos")
@@ -113,8 +109,8 @@ export default {
           console.log(err);
         });
     },
-    //削除ボタン
-    deleteTodo: function(id) {
+    // 削除ボタン
+    deleteTodo(id) {
       axios
         .delete("/todos", {
           params: { id: id }
@@ -126,10 +122,10 @@ export default {
           console.log(err);
         });
     },
-    //重要度カラー取得
+    // 重要度カラー取得
     getColor(importance) {
       if (importance === "high") return "red";
-      else if (importance === "normal") return "orange";
+      else if (importance === "middle") return "orange";
       else return "green";
     }
   }

@@ -61,7 +61,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 
 	_, err = tdl.Exec(body.Importance, body.Task, body.Deadline)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -84,7 +84,7 @@ func todos(w http.ResponseWriter, r *http.Request) {
 
 	todoJson, err := json.Marshal(todos)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
