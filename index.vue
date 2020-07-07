@@ -14,11 +14,7 @@
 
     <v-form>
       <div class="importance">
-            <v-chip
-      class="ma-2"
-      color="red"
-    >重要度
-    </v-chip>
+        <v-chip class="ma-2" color="red">重要度</v-chip>
         <v-radio-group v-model="todo.importance" :mandatory="true">
           <v-radio label="高い" value="high"></v-radio>
           <v-radio label="普通" value="normal"></v-radio>
@@ -26,28 +22,33 @@
         </v-radio-group>
       </div>
       <div class="text">
-      <v-col cols="6">
-        <v-text-field v-model="todo.task" :counter="255" label="タスク入力" outlined
-            shaped required></v-text-field>
-      </v-col>
-      <v-menu>
-        <template v-slot:activator="{on}">
-          <v-btn color="primary" dark v-on="on">
-            <v-icon>mdi-calendar</v-icon>カレンダーから日付を入力する
-          </v-btn>
-        </template>
-        <v-date-picker
-          locale="ja"
-          :day-format="date => new Date(date).getDate()"
-          v-model="todo.deadline"
-        />
-      </v-menu>
-      
-      <v-col cols="6">
-        <v-text-field v-model="todo.deadline" :counter="255" label="期限入力" outlined
-            shaped required></v-text-field>
-      </v-col>
-      <v-btn @click="createTodo">登録</v-btn>
+        <v-col cols="6">
+          <v-text-field v-model="todo.task" :counter="255" label="タスク入力" outlined shaped required></v-text-field>
+        </v-col>
+        <v-menu>
+          <template v-slot:activator="{on}">
+            <v-btn color="primary" dark v-on="on">
+              <v-icon>mdi-calendar</v-icon>カレンダーから日付を入力する
+            </v-btn>
+          </template>
+          <v-date-picker
+            locale="ja"
+            :day-format="date => new Date(date).getDate()"
+            v-model="todo.deadline"
+          />
+        </v-menu>
+
+        <v-col cols="6">
+          <v-text-field
+            v-model="todo.deadline"
+            :counter="255"
+            label="期限入力"
+            outlined
+            shaped
+            required
+          ></v-text-field>
+        </v-col>
+        <v-btn @click="createTodo">登録</v-btn>
       </div>
     </v-form>
   </div>
@@ -136,14 +137,12 @@ export default {
 </script>
 
 <style>
-
 .text {
-  margin : 0;
+  margin: 0;
 }
 
 .importance {
-    padding-top: 1em;
-    padding-left: 1em;
+  padding-top: 1em;
+  padding-left: 1em;
 }
-
 </style>
