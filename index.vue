@@ -39,14 +39,7 @@
         </v-menu>
 
         <v-col cols="6">
-          <v-text-field
-            v-model="todo.deadline"
-            :counter="255"
-            label="期限入力"
-            outlined
-            shaped
-            required
-          ></v-text-field>
+          <v-text-field v-model="todo.deadline" label="期限入力" outlined shaped required readonly></v-text-field>
         </v-col>
         <v-btn @click="createTodo">登録</v-btn>
       </div>
@@ -87,6 +80,16 @@ export default {
   created: function() {
     this.createTodo();
   },
+  computed: {
+    // 重要度カラー取得
+    getColor() {
+      return function(importance) {
+        if (importance === "high") return "red";
+        else if (importance === "middle") return "orange";
+        else return "green";
+      };
+    }
+  },
   methods: {
     createTodo() {
       axios
@@ -121,12 +124,6 @@ export default {
         .catch(err => {
           console.log(err);
         });
-    },
-    // 重要度カラー取得
-    getColor(importance) {
-      if (importance === "high") return "red";
-      else if (importance === "middle") return "orange";
-      else return "green";
     }
   }
 };
