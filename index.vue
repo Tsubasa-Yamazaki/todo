@@ -14,7 +14,7 @@
 
     <v-form>
       <div class="importance">
-        <v-chip class="ma-2" color="red">重要度</v-chip>
+        <v-chip>重要度</v-chip>
         <v-radio-group v-model="todo.importance" :mandatory="true">
           <v-radio label="高い" value="high"></v-radio>
           <v-radio label="普通" value="middle"></v-radio>
@@ -23,12 +23,12 @@
       </div>
       <div class="text">
         <v-col cols="6">
-          <v-text-field v-model="todo.task" :counter="255" label="タスク入力" outlined shaped required></v-text-field>
+          <v-text-field v-model="todo.task" :counter="255" label="タスクを入力してください" outlined shaped required></v-text-field>
         </v-col>
         <v-menu>
           <template v-slot:activator="{on}">
             <v-btn color="primary" dark v-on="on">
-              <v-icon>mdi-calendar</v-icon>カレンダーから日付を入力する
+              <v-icon>mdi-calendar</v-icon>日付を選んでください
             </v-btn>
           </template>
           <v-date-picker
@@ -39,7 +39,7 @@
         </v-menu>
 
         <v-col cols="6">
-          <v-text-field v-model="todo.deadline" label="期限入力" outlined shaped required readonly></v-text-field>
+          <v-text-field v-model="todo.deadline" label="期限が入力されます" outlined shaped required readonly></v-text-field>
         </v-col>
         <v-btn @click="createTodo">登録</v-btn>
       </div>
@@ -78,7 +78,7 @@ export default {
   },
 
   created: function() {
-    this.createTodo();
+    this.getTodos();
   },
   computed: {
     // 重要度カラー取得
