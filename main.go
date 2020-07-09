@@ -1,16 +1,19 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"xorm.io/core"
 )
 
-var db *sql.DB
+// var db *sql.DB
+
+var engine *xorm.Engine
 
 type todo struct {
 	ID         int    `json:"id"`
@@ -21,11 +24,14 @@ type todo struct {
 
 func main() {
 	var err error
-	db, err = sql.Open("mysql", "root:0111@/todo283")
+
+	engine, err = xorm.NewEngine("mysql", "root:0111@/todo283")
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
-	defer db.Close()
+	defer engine.Close()
+	engine.SetMapper(core.GonicMapper{})
 
 	log.Println("Open the 283todo.")
 
@@ -46,15 +52,9 @@ func main() {
 func todos(c echo.Context) error {
 	todos := []todo{}
 	var err error
-	rows, err := db.Query("SELECT * FROM todolist")
+	err = engine.Table("todolist").Find(&todos)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	for rows.Next() {
-		var todotable todo
-		err = rows.Scan(&todotable.ID, &todotable.Importance, &todotable.Task, &todotable.Deadline)
-		todos = append(todos, todotable)
 	}
 	return c.JSON(http.StatusOK, todos)
 }
@@ -65,29 +65,23 @@ func createTodo(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-
-	tdl, err := db.Prepare("INSERT todolist SET importance=?,task=?,deadline=?")
+	_, err = engine.Table("todolist").Insert(body)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	_, err = tdl.Exec(body.Importance, body.Task, body.Deadline)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 	return c.JSON(http.StatusOK, "OK")
 }
 
 func deleteTodo(c echo.Context) error {
+	var body todo
+	var err error
 	deleteId := c.QueryParam("id")
-	tdl, err := db.Prepare("DELETE FROM todolist WHERE id = ?")
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
-
-	_, err = tdl.Exec(deleteId)
+	_, err = engine.Table("todolist").Where("id = ?", deleteId).Delete(body)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 	return c.JSON(http.StatusOK, "OK")
 }
